@@ -17,7 +17,7 @@ you want.
 
 Right now, your log files need to be formatted like this:
 
-    I, [2013-04-22T09:47:33.081972 #12790] ERROR -- : sending.application.area:status {"optional":"json hash","with":"extra event data"}
+    I, [2013-04-22T09:47:33.081972 #12790] INFO -- : sending.application.area:status {"optional":"json hash","with":"extra event data"}
 
 This is obviously the best log format ever, but pull requests that add support for customizable formats might be merged. ;)
 
