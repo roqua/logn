@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require 'logn'
+
+parser = Logn::Parser.new
+events = []
+
+ARGF.set_encoding 'utf-8'
+ARGF.lines do |line|
+  event = parser.parse(line)
+  events << event
+  puts event.inspect
+end
+
+require 'pry'
+binding.pry
