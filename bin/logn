@@ -2,15 +2,14 @@
 
 require 'logn'
 
-parser = Logn::Parser.new
 events = []
 
 ARGF.set_encoding 'utf-8'
-ARGF.lines do |line|
-  event = parser.parse(line)
-  events << event
-  puts event.inspect
+puts start = Time.now
+ARGF.each_line do |line|
+  events << Logn::Event.new(line)
 end
+puts Time.now - start
 
 require 'pry'
 binding.pry

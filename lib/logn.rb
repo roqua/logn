@@ -3,51 +3,66 @@ require "logn/version"
 require 'ostruct'
 require 'time'
 require 'json'
+require 'yajl'
 
 module Logn
-  class Parser
-    def initialize
-      @regex = /^
-                (?<level>\w)
-                ,\s
-                \[
-                  (?<timestamp>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+)
-                  \s
-                  \#(?<pid>\d+)
-                \]
-                \s+
-                (?<severity>\w+)
-                \s--\s:\s
-                (?<sender>[\w.]+)
-                (?<event>:\w+)?
-                \s
-                (?<json>.*)
-                $/x
+  class Event
+    LOG_LINE_REGEX = /^
+                      (?<level>\w)
+                      ,\s
+                      \[
+                        (?<timestamp>\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+)
+                        \s
+                        \#(?<pid>\d+)
+                      \]
+                      \s+
+                      (?<severity>\w+)
+                      \s--\s:\s
+                      (?<sender>[\w.]+)
+                      (?<event>:\w+)?
+                      \s
+                      (?<json>.*)
+                      $/x
+
+    def initialize(line)
+      @line = line
     end
 
-    def parse(line)
-      match = line.match(@regex)
-      raise "Could not parse #{line}" unless match
+    def level
+      match[:level]
+    end
 
-      OpenStruct.new level: match[:level],
-                     timestamp: Time.iso8601(match[:timestamp]),
-                     pid: match[:pid],
-                     severity: match[:severity],
-                     sender: match[:sender],
-                     event: parse_event(match[:event]),
-                     metadata: parse_metadata(match[:json])
+    def timestamp
+      @timestamp ||= Time.iso8601(match[:timestamp])
+    end
+
+    def pid
+      match[:pid]
+    end
+
+    def severity
+      @severity ||= match[:severity].downcase.to_sym
+    end
+
+    def sender
+      match[:sender]
+    end
+
+    def event
+      @event ||= (match[:event] and match[:event].gsub(/^:/, ''))
+    end
+
+    def metadata
+      return nil unless match[:json]
+      @metadata ||= JSON.parse(match[:json])
     end
 
     private
 
-    def parse_event(event)
-      return nil unless event
-      event.gsub(/^:/, '')
-    end
-
-    def parse_metadata(json)
-      return nil unless json
-      JSON.parse(json)
+    def match
+      @match ||= @line.match(LOG_LINE_REGEX)
+      raise "Could not parse #{line}" unless @match
+      @match
     end
   end
 end
