@@ -1,5 +1,7 @@
 # Logn
 
+[![Build Status](https://travis-ci.org/roqua/logn.png)](https://travis-ci.org/roqua/logn)
+
 Why bother with complicated centralized logging servers with elastic searchers
 when you have a powerful machine running idle on your desk, and you only have
 a few million lines of logs anyway?
