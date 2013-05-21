@@ -3,7 +3,6 @@ require "logn/version"
 require 'ostruct'
 require 'time'
 require 'json'
-require 'yajl'
 
 module Logn
   class Event
