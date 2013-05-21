@@ -5,11 +5,11 @@ require 'logn'
 events = []
 
 ARGF.set_encoding 'utf-8'
-puts start = Time.now
 ARGF.each_line do |line|
   events << Logn::Event.new(line)
 end
-puts Time.now - start
+
+STDIN.reopen(File.open('/dev/tty', 'r'))
 
 require 'pry'
 binding.pry
