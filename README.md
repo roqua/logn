@@ -1,24 +1,25 @@
 # Logn
 
-TODO: Write a gem description
+Why bother with complicated centralized logging servers with elastic searchers
+when you have a powerful machine running idle on your desk, and you only have
+a few million lines of logs anyway?
+
+This gem is meant for those who are not web scale. You don't need to set up
+any servers. Just point it at some log files, and we'll give you a nice
+console where you can specify some filters to drill down to the lines
+you want.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'logn'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install logn
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ logn *.log
+
+Right now, your log files need to be formatted like this:
+
+    I, [2013-04-22T09:47:33.081972 #12790] ERROR -- : sending.application.area:status {"optional":"json hash","with":"extra event data"}
 
 ## Contributing
 
