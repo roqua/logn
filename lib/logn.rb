@@ -74,7 +74,7 @@ module Logn
       output.print event.timestamp.to_s.color(:yellow)
       output.print ' '
       output.print event.sender
-      output.print ':' + event.event if event.event
+      output.print ":#{event.event}" if event.event
       output.print "\n"
     end
   end
