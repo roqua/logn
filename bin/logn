@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 
 require 'logn'
+require 'ruby-progressbar'
 
-events = []
+events = Logn::Events.new
 
 ARGF.set_encoding 'utf-8'
 ARGF.each_line do |line|
-  events << Logn::Event.new(line)
+  events.add Logn::Event.new(line)
 end
 
 STDIN.reopen(File.open('/dev/tty', 'r'))
 
-require 'pry'
-binding.pry
+Logn::Shell.new(events).start

@@ -3,8 +3,82 @@ require "logn/version"
 require 'ostruct'
 require 'time'
 require 'json'
+require 'pry'
+require 'terminfo'
+require 'rainbow'
 
 module Logn
+  class Shell
+    attr_reader :events
+
+    def initialize(events)
+      @events = events
+    end
+
+    def start
+      binding.pry(quiet: true)
+    end
+
+    def filter(&block)
+      @events.add_filter &block
+    end
+
+    def show
+      formatter = EventFormatter.new(STDOUT)
+      @events.each {|e| formatter.print e }
+      nil
+    end
+  end
+
+  class Events
+    include Enumerable
+
+    def initialize
+      @events  = []
+      @filters = []
+    end
+
+    def add(event)
+      @events << event
+    end
+
+    def add_filter &block
+      @filters << block
+    end
+
+    def matching
+      @events.select do |event|
+        @filters.all? {|filter| filter.call event }
+      end
+    end
+
+    def each(*args, &block)
+      matching.each(*args, &block)
+    end
+
+    def size
+      return @events.size if @filters.empty?
+      matching.size
+    end
+  end
+
+  class EventFormatter
+    attr_reader :output
+
+    def initialize(output)
+      @output = output
+      @height, @width = TermInfo.screen_size
+    end
+
+    def print(event)
+      output.print event.timestamp.to_s.color(:yellow)
+      output.print ' '
+      output.print event.sender
+      output.print ':' + event.event if event.event
+      output.print "\n"
+    end
+  end
+
   class Event
     LOG_LINE_REGEX = /^
                       (?<level>\w)
@@ -48,7 +122,7 @@ module Logn
     end
 
     def event
-      @event ||= (match[:event] and match[:event].gsub(/^:/, ''))
+      @event ||= (match[:event] and match[:event].gsub(/^:/, '').downcase.to_sym)
     end
 
     def metadata
